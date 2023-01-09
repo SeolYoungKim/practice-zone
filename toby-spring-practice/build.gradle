@@ -30,6 +30,8 @@ dependencies {
 
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
+
+    implementation 'org.springframework:spring-jdbc:6.0.3'
 }
 
 tasks.named('test') {

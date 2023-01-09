@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 
 @Slf4j
 public class ClassLoaderTest {
-
     @Test
     void classInitTest() throws Exception {
         Class<?> classDriverA = Class.forName("com.study.java_practice.ClassLoaderTest$DriverA");
