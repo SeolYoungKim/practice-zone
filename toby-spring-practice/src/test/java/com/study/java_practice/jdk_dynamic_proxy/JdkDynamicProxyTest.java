@@ -1,7 +1,11 @@
 package com.study.java_practice.jdk_dynamic_proxy;
 
+import static org.assertj.core.api.Assertions.*;
+
 import java.lang.reflect.Proxy;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @Slf4j
@@ -55,5 +59,18 @@ public class JdkDynamicProxyTest {
         System.out.println("----------------------");
         log.info("call*이 아닌 메서드 호출");
         proxy.methodNotUseProxy();
+    }
+
+    @DisplayName("인터페이스가 아닌 구체 클래스로 프록시를 만들 경우 예외가 발생한다.")
+    @Test
+    void fail() {
+        BInterface target = new BImpl();
+        TimeInvocationFilterHandler handler = new TimeInvocationFilterHandler(target,
+                new String[]{"call*"});
+
+        assertThatThrownBy(() -> Proxy.newProxyInstance(
+                BInterface.class.getClassLoader(), new Class[]{BImpl.class}, handler))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("BImpl is not an interface");
     }
 }
