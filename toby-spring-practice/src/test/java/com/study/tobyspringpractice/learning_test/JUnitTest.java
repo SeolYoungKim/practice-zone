@@ -2,7 +2,7 @@ package com.study.tobyspringpractice.learning_test;
 
 import static org.assertj.core.api.Assertions.*;
 
-import com.study.tobyspringpractice.domain.MemberRepository;
+import com.study.tobyspringpractice.dependency.constructor.MemberRepositoryImpl;
 import java.util.HashSet;
 import java.util.Set;
 import javax.sql.DataSource;
@@ -18,7 +18,7 @@ public class JUnitTest {
     ApplicationContext applicationContext;
 
     @Autowired
-    MemberRepository autowiredMemberRepository;
+    MemberRepositoryImpl autowiredMemberRepositoryImpl;
 
     static Set<JUnitTest> testObjects = new HashSet<>();
     static ApplicationContext context = null;
@@ -62,13 +62,13 @@ public class JUnitTest {
 
     @Test
     void getBeanSuccess() {
-        MemberRepository bean = applicationContext.getBean(MemberRepository.class);
+        MemberRepositoryImpl bean = applicationContext.getBean(MemberRepositoryImpl.class);
         assertThat(bean).extracting("name").isEqualTo("thisIsMemberRepositoryBean");
     }
 
     @Test
     void getBeanEqualTo() {
-        MemberRepository beanByGetBean = applicationContext.getBean(MemberRepository.class);
-        assertThat(beanByGetBean).isSameAs(autowiredMemberRepository);
+        MemberRepositoryImpl beanByGetBean = applicationContext.getBean(MemberRepositoryImpl.class);
+        assertThat(beanByGetBean).isSameAs(autowiredMemberRepositoryImpl);
     }
 }
