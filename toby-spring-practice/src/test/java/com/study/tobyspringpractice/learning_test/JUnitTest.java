@@ -23,7 +23,6 @@ public class JUnitTest {
     static Set<JUnitTest> testObjects = new HashSet<>();
     static ApplicationContext context = null;
 
-
     @Test
     void objTest1() {
         assertThat(testObjects).doesNotContain(this);
