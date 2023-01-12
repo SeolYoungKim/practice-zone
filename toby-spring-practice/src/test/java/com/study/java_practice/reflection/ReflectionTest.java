@@ -3,8 +3,10 @@ package com.study.java_practice.reflection;
 import static org.assertj.core.api.Assertions.*;
 
 import com.study.tobyspringpractice.learning_test.JUnitTest;
+import java.lang.constant.ClassDesc;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 
 import org.assertj.core.api.Assertions;
@@ -105,5 +107,18 @@ public class ReflectionTest {
         log.info("ClassLoaderByImplClass : {}", implClassLoader);
 
         assertThat(interfaceClassLoader).isSameAs(implClassLoader);
+    }
+
+    @Test
+    void name() {
+        Class<? extends ReflectionTest> aClass = this.getClass();
+        log.info(aClass.describeConstable().toString());
+        log.info(aClass.descriptorString());
+
+        Method[] declaredMethods = aClass.getDeclaredMethods();
+        log.info("{}", Arrays.toString(declaredMethods));
+
+        ClassDesc classDesc = aClass.describeConstable().orElse(null);
+        log.info(classDesc.packageName());
     }
 }

@@ -12,9 +12,11 @@ public class MemberService {
     @Autowired
     public MemberService(final MemberRepository memberRepository) {
         log.info("생성자 주입 완료. 주입된 오브젝트의 타입 = {}", memberRepository.getClass().getSimpleName());
+        memberRepository.save(new Member());
         this.memberRepository = memberRepository;
     }
 
+    // 빈이 다 등록되고나서 수행됨
     @Autowired
     public void setMemberRepository(final MemberRepository memberRepository) {
         log.info("수정자 주입 완료. 주입된 오브젝트의 타입 = {}", memberRepository.getClass().getSimpleName());

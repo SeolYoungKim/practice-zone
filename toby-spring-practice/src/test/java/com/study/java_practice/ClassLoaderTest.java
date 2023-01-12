@@ -10,7 +10,6 @@ public class ClassLoaderTest {
         Class<?> classDriverA = Class.forName("com.study.java_practice.ClassLoaderTest$DriverA");
 
         ClassLoader classLoader = classDriverA.getClassLoader();
-        log.info("ClassLoader 호출 = {}", classLoader);
         Class<?> classDriverB = classLoader.loadClass("com.study.java_practice.ClassLoaderTest$DriverB");
     }
 
