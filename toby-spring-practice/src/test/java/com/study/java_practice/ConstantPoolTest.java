@@ -11,7 +11,6 @@ public class ConstantPoolTest {
     void name() {
         Field[] declaredFields = TestA.class.getDeclaredFields();
         System.out.println(Arrays.toString(declaredFields));
-
     }
 
     static class TestA {

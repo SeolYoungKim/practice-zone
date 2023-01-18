@@ -31,7 +31,7 @@ public class PackageLogTracePostProcessor implements BeanPostProcessor {
         //프록시 대상이면 프록시를 만들어서 반환
         ProxyFactory proxyFactory = new ProxyFactory(bean);
         proxyFactory.addAdvisor(advisor);
-        proxyFactory.setProxyTargetClass(true);  // cglib
+        proxyFactory.setProxyTargetClass(true);  // cglib으로 변경
 
         Object proxy = proxyFactory.getProxy();
         log.info("create proxy : target={} proxy={}", bean.getClass(), proxy.getClass());

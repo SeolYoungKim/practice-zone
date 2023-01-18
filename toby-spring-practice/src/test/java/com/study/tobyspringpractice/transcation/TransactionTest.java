@@ -162,5 +162,4 @@ public class TransactionTest {
         transactionManager.rollback(tx2);
         transactionManager.commit(tx1);
     }
-
 }
