@@ -2,10 +2,17 @@ package com.study.tobyspringpractice.spring_practice.proxy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.List;
+import org.aopalliance.aop.Advice;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.aop.ClassFilter;
+import org.springframework.aop.MethodMatcher;
+import org.springframework.aop.Pointcut;
 import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.aop.support.NameMatchMethodPointcut;
@@ -100,6 +107,80 @@ public class ProxyTest {
             final String result = (String) invocation.proceed();  // 해당 메서드를 실행하면 타깃 오브젝트의 메서드를 내부적으로 실행해줌
             return result.toUpperCase();
         }
+    }
+
+    //clazz -> clazz.getName().equals("HelloTarget");
+    @Test
+    void classNamePointcutAdvisor() {
+        final NameMatchMethodPointcut classMethodPointcut = new NameMatchMethodPointcut() {
+            @Override
+            public ClassFilter getClassFilter() {
+                return clazz -> clazz.getSimpleName().startsWith("HelloT");
+            }
+        };
+
+        classMethodPointcut.setMappedName("sayH*");
+
+        checkAdviced(new HelloTarget(), classMethodPointcut, true);
+
+        class HelloWorld extends HelloTarget {}
+        checkAdviced(new HelloWorld(), classMethodPointcut, false);
+
+        class HelloToby extends HelloTarget {}
+        checkAdviced(new HelloToby(), classMethodPointcut, true);
+    }
+
+    private void checkAdviced(Object target, Pointcut pointcut, boolean adviced) {
+        final ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean();
+        proxyFactoryBean.setTarget(target);
+        proxyFactoryBean.addAdvisor(new DefaultPointcutAdvisor(pointcut, new UppercaseAdvice()));
+        final Hello proxy = (Hello) proxyFactoryBean.getObject();
+
+        if (adviced) {
+            assertThat(proxy.sayHello("kim")).isEqualTo("HELLO KIM");
+            assertThat(proxy.sayHi("kim")).isEqualTo("HI KIM");
+            assertThat(proxy.sayThankYou("kim")).isEqualTo("Thank you kim");
+        } else {
+            assertThat(proxy.sayHello("kim")).isEqualTo("Hello kim");
+            assertThat(proxy.sayHi("kim")).isEqualTo("Hi kim");
+            assertThat(proxy.sayThankYou("kim")).isEqualTo("Thank you kim");
+        }
+    }
+
+    @Autowired
+    private DefaultPointcutAdvisor defaultPointcutAdvisor;
+
+    @DisplayName("DI 확인")
+    @Test
+    void proxyComponentTest() {
+        final Pointcut pointcut = defaultPointcutAdvisor.getPointcut();
+        final MethodMatcher methodMatcher = pointcut.getMethodMatcher();
+        final ClassFilter classFilter = pointcut.getClassFilter();
+
+        final String methodMatcherSimpleName = methodMatcher.getClass().getSimpleName();
+        assertThat(methodMatcherSimpleName).isEqualTo("NameMatchClassMethodPointcut");
+
+        final String classFilterSimpleName = classFilter.getClass().getSimpleName();
+        assertThat(classFilterSimpleName).startsWith("NameMatchClassMethodPointcut");
+
+        final Advice advice = defaultPointcutAdvisor.getAdvice();
+        final String adviceSimpleName = advice.getClass().getSimpleName();
+        assertThat(adviceSimpleName).isEqualTo("TransactionAdvice");
+    }
+
+    @DisplayName("classFilter에 구현한 matches()함수 작동 확인")
+    @Test
+    void classFilterMatchesTest() {
+        final Pointcut pointcut = defaultPointcutAdvisor.getPointcut();
+        final ClassFilter classFilter = pointcut.getClassFilter();
+
+        assertThat(classFilter.matches(HelloTarget.class)).isTrue();
+
+        class HelloToby extends HelloTarget {}
+        assertThat(classFilter.matches(HelloToby.class)).isTrue();
+
+        class HelloWorld extends HelloTarget {}
+        assertThat(classFilter.matches(HelloWorld.class)).isFalse();
     }
 
 }
