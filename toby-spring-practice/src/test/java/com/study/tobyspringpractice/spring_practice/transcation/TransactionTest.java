@@ -17,6 +17,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.UnexpectedRollbackException;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @SpringBootTest
@@ -161,5 +162,46 @@ public class TransactionTest {
 
         transactionManager.rollback(tx2);
         transactionManager.commit(tx1);
+    }
+
+    @DisplayName("트랜잭션이 새로 생성될 때 스레드가 새로 생성될까?")
+    @Test
+    void transactionThread() {
+        txMethod1();
+        txMethod2();
+        txMethod3();
+    }
+
+    @Transactional
+    void txMethod1() {
+        System.out.println("Thread=" + Thread.currentThread());
+        System.out.println("============================");
+        txMethod1inner1();  // 내부 트랜잭션 수행
+    }
+
+    @Transactional
+    void txMethod1inner1() {
+        System.out.println("Thread=" + Thread.currentThread());
+        System.out.println("============================");
+        txMethod1inner2();
+    }
+
+    @Transactional
+    void txMethod1inner2() {
+        System.out.println("Thread=" + Thread.currentThread());
+        System.out.println("============================");
+//        throw new RuntimeException();
+    }
+
+    @Transactional
+    void txMethod2() {
+        System.out.println("Thread=" + Thread.currentThread());
+        System.out.println("============================");
+    }
+
+    @Transactional
+    void txMethod3() {
+        System.out.println("Thread=" + Thread.currentThread());
+        System.out.println("============================");
     }
 }

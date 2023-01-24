@@ -1,5 +1,8 @@
 package com.study.tobyspringpractice.spring_practice.proxy;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class HelloTarget implements Hello {
 
     @Override

@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.List;
 import org.aopalliance.aop.Advice;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -183,4 +182,23 @@ public class ProxyTest {
         assertThat(classFilter.matches(HelloWorld.class)).isFalse();
     }
 
+    @Autowired
+    private HelloTarget helloTarget;
+
+    @Test
+    void helloTargetIsProxied() {
+        System.out.println(helloTarget.sayHello("kim"));
+        System.out.println(helloTarget.sayHi("kim"));
+        System.out.println(helloTarget.sayThankYou("kim"));
+    }
+
+    @DisplayName("스프링 빈의 메서드들은 전부 프록시 객체의 메서드다 (CGLIB)")
+    @Test
+    void test() {
+        final Method[] declaredMethods = helloTarget.getClass().getDeclaredMethods();
+        for (Method declaredMethod : declaredMethods) {
+            final String method = declaredMethod.toString();
+            assertThat(method).contains("HelloTarget$$SpringCGLIB$$");
+        }
+    }
 }
